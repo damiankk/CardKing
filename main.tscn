@@ -16,3 +16,73 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.176471, 0.419608, 0, 1)
+
+[node name="StockPileArea" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 120.0
+offset_bottom = 170.0
+
+[node name="WastePileArea" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 20.0
+offset_right = 240.0
+offset_bottom = 170.0
+
+[node name="FoundationPileArea1" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 1032.0
+offset_top = 20.0
+offset_right = 1132.0
+offset_bottom = 170.0
+
+[node name="TableauPileArea1" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 166.0
+offset_top = 210.0
+offset_right = 266.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea2" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 286.0
+offset_top = 210.0
+offset_right = 386.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea3" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 406.0
+offset_top = 210.0
+offset_right = 506.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea4" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 526.0
+offset_top = 210.0
+offset_right = 626.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea5" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 646.0
+offset_top = 210.0
+offset_right = 746.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea6" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 766.0
+offset_top = 210.0
+offset_right = 866.0
+offset_bottom = 360.0
+
+[node name="TableauPileArea7" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 886.0
+offset_top = 210.0
+offset_right = 986.0
+offset_bottom = 360.0
