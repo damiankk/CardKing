@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Card King"
+run/main_scene="uid://t88lxmbpm4fu"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
 
