@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://t88lxmbpm4fu"]
+[gd_scene load_steps=2 format=3 uid="uid://t88lxmbpm4fu"]
+
+[ext_resource type="Script" uid="uid://ckml78qxssdbl" path="res://deck.gd" id="1_ig7tw"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -86,3 +88,6 @@ offset_left = 886.0
 offset_top = 210.0
 offset_right = 986.0
 offset_bottom = 360.0
+
+[node name="Deck" type="Node" parent="."]
+script = ExtResource("1_ig7tw")

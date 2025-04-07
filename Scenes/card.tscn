@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://dosspel3if3qm"]
+[gd_scene load_steps=2 format=3 uid="uid://dosspel3if3qm"]
+
+[ext_resource type="Script" uid="uid://dg2xrf1q5uhwa" path="res://Scenes/card.gd" id="1_0qqmn"]
 
 [node name="Card" type="Control"]
 layout_mode = 3
@@ -9,6 +11,7 @@ offset_right = -1052.0
 offset_bottom = -498.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_0qqmn")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
