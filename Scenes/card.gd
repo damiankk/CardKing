@@ -11,12 +11,14 @@ var rank: int = -1 # 1=Ace, 2-10, 11=Jack, 12=Queen, 13=King. -1 means unassigne
 #@onready var rank_label: Label = $RankLabel
 #@onready var suit_label: Label = $SuitLabel
 
+var is_face_up: bool = false
+
 # Call this function to set the card's suit and rank
 func set_card_data(new_suit: int, new_rank: int):
 	suit = new_suit
 	rank = new_rank
 	update_display() # Update the labels based on the new data
-	
+
 # Updates the visual display (labels) based on suit and rank
 func update_display():
 	# 1. Determine Rank String
@@ -57,11 +59,17 @@ func update_display():
 	$RankLabel.add_theme_color_override("font_color", current_color)
 	$SuitLabel.add_theme_color_override("font_color", current_color)
 
+	if is_face_up:
+		$Background.color = Color.WHITE
+		$RankLabel.visible = true
+		$SuitLabel.visible = true
+	else:
+		$Background.color = Color.BLUE
+		$RankLabel.visible = false
+		$SuitLabel.visible = false
+
 func _ready():
-	# --- Temporary line for testing ---
-	#set_card_data(0, 3) # Test: Set card to Ace (1) of Hearts (2)
-	# --- Remove this line after testing ---
-	pass # Keep pass if the function would otherwise be empty
+	update_display()
 
 # Returns a human-readable string description of the card
 func get_card_description() -> String:
@@ -87,3 +95,7 @@ func get_card_description() -> String:
 
 	# --- Combine and return ---
 	return rank_string + " of " + suit_string
+
+func set_face_up(face_up: bool):
+	is_face_up = face_up
+	update_display()

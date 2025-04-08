@@ -3,6 +3,8 @@ extends Node
 const CardScene = preload("res://Scenes/card.tscn")
 
 var deck_cards: Array = [] # An array to hold the 52 card instances
+var tableau_areas: Array = [] # An array to hold all of TableauPileArea
+const TABLEAU_Y_OFFSET = 30
 
 func _ready():
 	print("Deck node is ready. Creating and shuffling deck...")
@@ -10,30 +12,28 @@ func _ready():
 	shuffle_deck()
 	print("Deck finished setup. Card count: ", deck_cards.size())
 
-	# --- Deal one card visually to the StockPileArea ---
-	# Get a reference to the StockPileArea node (which is a sibling)
-	# get_parent() gets 'Main', then get_node finds 'StockPileArea'
-	var stock_area = get_parent().get_node("StockPileArea")
+	# --- Get references to Tableau Area nodes ---
+	print("Getting Tableau area nodes...")
+	tableau_areas.clear() # Good practice to clear before populating
+	for i in range(7): # Loop 0 to 6, so pile number is i + 1
+		var pile_number = i + 1
+		var node_name = "TableauPileArea" + str(pile_number)
+		var tableau_pile_node = get_parent().get_node(node_name)
 
-	if stock_area: # Check if we successfully found the node
-		var card_to_deal = deal_one_card() # Get one card from our array
-		if card_to_deal: # Check we actually got a card (deck wasn't empty)
-			# Set the card's position relative to its new parent (stock_area)
-			# Vector2(0, 0) means the top-left corner of the stock_area panel
-			card_to_deal.position = Vector2(0, 0)
-
-			# Add the card instance as a child of stock_area
-			# This makes the card VISIBLE and part of the scene tree!
-			stock_area.add_child(card_to_deal)
-
-# Call the new function to get the description string
-			print("Dealt one card (", card_to_deal.get_card_description(), ") to stock area visually.")
+		if tableau_pile_node:
+			tableau_areas.append(tableau_pile_node) # Append the node found
+			# print("Found and stored: ", node_name) # Optional confirmation print
 		else:
-			print("Deck was empty, couldn't deal test card.")
+			print("ERROR: Could not find node named '", node_name, "'")
+
+	# Check if we got all 7 areas
+	if tableau_areas.size() == 7:
+		print("Successfully stored references to all 7 Tableau areas.")
 	else:
-		# This error means the node name in get_node() might be wrong
-		# or the Deck node isn't a direct child of Main.
-		print("ERROR: Could not find StockPileArea node relative to Deck node.")
+		print("WARN: Did not find all 7 Tableau area nodes!")
+
+	# --- Call the initial deal function ---
+	deal_initial_tableau()
 	
 func create_deck():
 	deck_cards.clear() # Start with an empty array
@@ -67,3 +67,14 @@ func deal_one_card():
 		return null # Return null if no cards are left
 	# pop_back() removes and returns the last element from the array
 	return deck_cards.pop_back()
+	
+func deal_initial_tableau():
+	for i in range(7):
+		var tableau_area_node = tableau_areas[i]
+		for j in range(i + 1):
+			var dealt_card = deal_one_card()
+			if dealt_card:
+				tableau_area_node.add_child(dealt_card)
+				dealt_card.position = Vector2(0, j * TABLEAU_Y_OFFSET)
+			else:
+				print("Deck ended unexpectedly...")
