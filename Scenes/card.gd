@@ -60,16 +60,19 @@ func update_display():
 	$SuitLabel.add_theme_color_override("font_color", current_color)
 
 	# Example adjustment in update_display if Background is a Panel
-	var style_box : StyleBoxFlat = $Background.get_theme_stylebox("panel")
-	if is_face_up:
-		style_box.bg_color = Color.WHITE
-		$RankLabel.visible = true
-		$SuitLabel.visible = true
-	else:
-		style_box.bg_color = Color.DIM_GRAY
-		$RankLabel.visible = false
-		$SuitLabel.visible = false
+	print("my is_face_up is " + str(is_face_up))
+	# Ensure labels are visible when face-up
+	$RankLabel.visible = is_face_up
+	$SuitLabel.visible = is_face_up
 
+	# Set z_index values dynamically
+	$Background.z_index = 0  # Background should be at the lowest level
+	$RankLabel.z_index = 1   # Rank label above the background
+	$SuitLabel.z_index = 1   # Suit label above the background
+	if is_face_up:
+		$Background.modulate = Color(1, 1, 1) # White background
+	else:
+		$Background.modulate = Color(0.5, 0.5, 0.5) # Gray background
 func _ready():
 	update_display()
 

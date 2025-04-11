@@ -78,6 +78,13 @@ func deal_initial_tableau():
 			if dealt_card:
 				tableau_area_node.add_child(dealt_card)
 				dealt_card.position = Vector2(0, j * TABLEAU_Y_OFFSET)
+				# Inside the 'if dealt_card:' block in deal_initial_tableau
+				if j == i: # Is this the last card for this pile?
+					print("Setting card (Pile ", i, ", Card ", j, ") FACE UP") # Debug print
+					dealt_card.set_face_up(true)
+				else: # This is a card that should be face down
+					print("Setting card (Pile ", i, ", Card ", j, ") FACE DOWN") # Debug print
+					dealt_card.set_face_up(false) # Explicitly set face down
 			else:
 				print("Deck ended unexpectedly...")
 
