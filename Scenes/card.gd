@@ -59,12 +59,14 @@ func update_display():
 	$RankLabel.add_theme_color_override("font_color", current_color)
 	$SuitLabel.add_theme_color_override("font_color", current_color)
 
+	# Example adjustment in update_display if Background is a Panel
+	var style_box : StyleBoxFlat = $Background.get_theme_stylebox("panel")
 	if is_face_up:
-		$Background.color = Color.WHITE
+		style_box.bg_color = Color.WHITE
 		$RankLabel.visible = true
 		$SuitLabel.visible = true
 	else:
-		$Background.color = Color.BLUE
+		style_box.bg_color = Color.DIM_GRAY
 		$RankLabel.visible = false
 		$SuitLabel.visible = false
 

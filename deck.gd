@@ -34,6 +34,8 @@ func _ready():
 
 	# --- Call the initial deal function ---
 	deal_initial_tableau()
+	# --- Deal remaining cards ---
+	deal_stock()
 	
 func create_deck():
 	deck_cards.clear() # Start with an empty array
@@ -78,3 +80,14 @@ func deal_initial_tableau():
 				dealt_card.position = Vector2(0, j * TABLEAU_Y_OFFSET)
 			else:
 				print("Deck ended unexpectedly...")
+
+func deal_stock():
+	var stock_area = get_parent().get_node("StockPileArea")
+	if not stock_area:
+		print ("Dupa, nie znalazl")
+	else:
+		while(!deck_cards.is_empty()):
+			var dealt_card = deal_one_card()
+			if dealt_card:
+				stock_area.add_child(dealt_card)
+				dealt_card.position = Vector2.ZERO #concise way to set Vector2(0,0)
