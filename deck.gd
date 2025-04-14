@@ -5,6 +5,8 @@ const CardScene = preload("res://Scenes/card.tscn")
 var deck_cards: Array = [] # An array to hold the 52 card instances
 var tableau_areas: Array = [] # An array to hold all of TableauPileArea
 const TABLEAU_Y_OFFSET = 30
+var stock_pile_cards: Array = []
+var waste_cards: Array = []
 
 func _ready():
 	print("Deck node is ready. Creating and shuffling deck...")
@@ -63,18 +65,18 @@ func shuffle_deck():
 	print("Deck array shuffled.")
 	
 # Removes and returns the last card from the deck array
-func deal_one_card():
-	if deck_cards.is_empty():
+func deal_one_card(cards_pile):
+	if cards_pile.is_empty():
 		print("WARN: Tried to deal from empty deck.")
 		return null # Return null if no cards are left
 	# pop_back() removes and returns the last element from the array
-	return deck_cards.pop_back()
+	return cards_pile.pop_back()
 	
 func deal_initial_tableau():
 	for i in range(7):
 		var tableau_area_node = tableau_areas[i]
 		for j in range(i + 1):
-			var dealt_card = deal_one_card()
+			var dealt_card = deal_one_card(deck_cards)
 			if dealt_card:
 				tableau_area_node.add_child(dealt_card)
 				dealt_card.position = Vector2(0, j * TABLEAU_Y_OFFSET)
@@ -94,7 +96,35 @@ func deal_stock():
 		print ("Dupa, nie znalazl")
 	else:
 		while(!deck_cards.is_empty()):
-			var dealt_card = deal_one_card()
+			var dealt_card = deal_one_card(deck_cards)
 			if dealt_card:
+				stock_pile_cards.append(dealt_card)
 				stock_area.add_child(dealt_card)
 				dealt_card.position = Vector2.ZERO #concise way to set Vector2(0,0)
+
+
+func _on_stock_pile_area_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
+			print("Stock pile clicked!")
+			var waste_area_node = get_parent().get_node("WastePileArea")
+			if stock_pile_cards.is_empty(): 
+				print("empty stock_pile_cards array")
+				return
+			var dealt_card = deal_one_card(stock_pile_cards)
+			if dealt_card:
+				# --- Remove card from the previous parent ---
+				var old_parent = dealt_card.get_parent()
+				if old_parent:
+					old_parent.remove_child(dealt_card)
+
+				# -- Hiding all previous cards on waste_area_node --
+				var waste_area_node_children = waste_area_node.get_children()
+				for child in waste_area_node_children:
+					child.visible = false
+
+				print("Adding card to waste_area_node")
+				dealt_card.set_face_up(true)
+				waste_cards.append(dealt_card)
+				waste_area_node.add_child(dealt_card)
+				dealt_card.position = Vector2.ZERO

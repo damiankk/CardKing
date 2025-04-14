@@ -91,3 +91,5 @@ offset_bottom = 360.0
 
 [node name="Deck" type="Node" parent="."]
 script = ExtResource("1_ig7tw")
+
+[connection signal="gui_input" from="StockPileArea" to="Deck" method="_on_stock_pile_area_gui_input"]
