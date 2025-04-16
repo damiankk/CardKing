@@ -108,23 +108,36 @@ func _on_stock_pile_area_gui_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
 			print("Stock pile clicked!")
 			var waste_area_node = get_parent().get_node("WastePileArea")
+			var stock_area = get_parent().get_node("StockPileArea")
 			if stock_pile_cards.is_empty(): 
-				print("empty stock_pile_cards array")
-				return
-			var dealt_card = deal_one_card(stock_pile_cards)
-			if dealt_card:
-				# --- Remove card from the previous parent ---
-				var old_parent = dealt_card.get_parent()
-				if old_parent:
-					old_parent.remove_child(dealt_card)
+				print("Empty stock_pile_cards array. Trying to restock")
+				if waste_cards.is_empty():
+					return
+				else:
+					print("Restocking from waste cards")
+					while not waste_cards.is_empty():
+						var restocked_card = waste_cards.pop_back()
+						waste_area_node.remove_child(restocked_card)
+						restocked_card.visible = true
+						restocked_card.set_face_up(false)
+						stock_pile_cards.append(restocked_card)
+						stock_area.add_child(restocked_card)
+						restocked_card.position = Vector2.ZERO
+			else:
+				var dealt_card = deal_one_card(stock_pile_cards)
+				if dealt_card:
+					# --- Remove card from the previous parent ---
+					var old_parent = dealt_card.get_parent()
+					if old_parent:
+						old_parent.remove_child(dealt_card)
 
-				# -- Hiding all previous cards on waste_area_node --
-				var waste_area_node_children = waste_area_node.get_children()
-				for child in waste_area_node_children:
-					child.visible = false
+					# -- Hiding all previous cards on waste_area_node --
+					var waste_area_node_children = waste_area_node.get_children()
+					for child in waste_area_node_children:
+						child.visible = false
 
-				print("Adding card to waste_area_node")
-				dealt_card.set_face_up(true)
-				waste_cards.append(dealt_card)
-				waste_area_node.add_child(dealt_card)
-				dealt_card.position = Vector2.ZERO
+					print("Adding card to waste_area_node")
+					dealt_card.set_face_up(true)
+					waste_cards.append(dealt_card)
+					waste_area_node.add_child(dealt_card)
+					dealt_card.position = Vector2.ZERO
