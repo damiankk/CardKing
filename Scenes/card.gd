@@ -1,3 +1,4 @@
+class_name Card
 extends Control
 
 const COLOR_RED = Color(1, 0, 0) # Using Color(1,0,0) for pure red
@@ -60,7 +61,7 @@ func update_display():
 	$SuitLabel.add_theme_color_override("font_color", current_color)
 
 	# Example adjustment in update_display if Background is a Panel
-	print("my is_face_up is " + str(is_face_up))
+	#print("my is_face_up is " + str(is_face_up))
 	# Ensure labels are visible when face-up
 	$RankLabel.visible = is_face_up
 	$SuitLabel.visible = is_face_up

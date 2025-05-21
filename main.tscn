@@ -40,6 +40,24 @@ offset_top = 20.0
 offset_right = 1132.0
 offset_bottom = 170.0
 
+[node name="FoundationPileArea2" type="Panel" parent="."]
+offset_left = 912.0
+offset_top = 20.0
+offset_right = 1012.0
+offset_bottom = 170.0
+
+[node name="FoundationPileArea3" type="Panel" parent="."]
+offset_left = 792.0
+offset_top = 20.0
+offset_right = 892.0
+offset_bottom = 170.0
+
+[node name="FoundationPileArea4" type="Panel" parent="."]
+offset_left = 672.0
+offset_top = 20.0
+offset_right = 772.0
+offset_bottom = 170.0
+
 [node name="TableauPileArea1" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 166.0

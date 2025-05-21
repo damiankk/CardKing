@@ -4,10 +4,13 @@ const CardScene = preload("res://Scenes/card.tscn")
 
 var deck_cards: Array = [] # An array to hold the 52 card instances
 var tableau_areas: Array = [] # An array to hold all of TableauPileArea
+var foundation_areas: Array = [] # An array to hold all of FoundationPileArea
+var foundation_piles: Array = [[], [], [], []] # We need a way to store which cards are in each foundation pile. An array containing four other empty arrays is a good way to represent this.
 const TABLEAU_Y_OFFSET = 30
 var stock_pile_cards: Array = []
 var waste_cards: Array = []
 
+#Initializes everything – creates the full deck, shuffles it, gets references to the pile areas, and calls deal_initial_tableau() and deal_stock().
 func _ready():
 	print("Deck node is ready. Creating and shuffling deck...")
 	create_deck()
@@ -34,11 +37,28 @@ func _ready():
 	else:
 		print("WARN: Did not find all 7 Tableau area nodes!")
 
+	foundation_areas.clear()
+	for i in range(4):
+		var pile_number = i + 1
+		var node_name = "FoundationPileArea" + str(pile_number)
+		var foundation_pile_node = get_parent().get_node(node_name)
+		
+		if foundation_pile_node:
+			foundation_areas.append(foundation_pile_node)
+		else:
+			print("ERROR: Could not find node named '", node_name, "'")
+			
+	if foundation_areas.size() == 4:
+		print("Successfully stored references to all 4 Foundation areas.")
+	else:
+		print("WARN: Did not find all 4 Foundation area nodes!")
+		
 	# --- Call the initial deal function ---
 	deal_initial_tableau()
 	# --- Deal remaining cards ---
 	deal_stock()
 	
+#create_deck(): Instantiates 52 Card scenes, sets their data, and adds them to deck_cards
 func create_deck():
 	deck_cards.clear() # Start with an empty array
 	# Loop through suits (0=C, 1=D, 2=H, 3=S)
@@ -72,6 +92,7 @@ func deal_one_card(cards_pile):
 	# pop_back() removes and returns the last element from the array
 	return cards_pile.pop_back()
 	
+# Deals cards from deck_cards to the tableau_areas, setting the last card in each pile face-up.
 func deal_initial_tableau():
 	for i in range(7):
 		var tableau_area_node = tableau_areas[i]
@@ -85,11 +106,12 @@ func deal_initial_tableau():
 					print("Setting card (Pile ", i, ", Card ", j, ") FACE UP") # Debug print
 					dealt_card.set_face_up(true)
 				else: # This is a card that should be face down
-					print("Setting card (Pile ", i, ", Card ", j, ") FACE DOWN") # Debug print
+					#print("Setting card (Pile ", i, ", Card ", j, ") FACE DOWN") # Debug print
 					dealt_card.set_face_up(false) # Explicitly set face down
 			else:
 				print("Deck ended unexpectedly...")
 
+# Deals remaining cards from deck_cards to StockPileArea (visually) and stock_pile_cards (data), face-down.
 func deal_stock():
 	var stock_area = get_parent().get_node("StockPileArea")
 	if not stock_area:
@@ -102,7 +124,7 @@ func deal_stock():
 				stock_area.add_child(dealt_card)
 				dealt_card.position = Vector2.ZERO #concise way to set Vector2(0,0)
 
-
+# Handles clicks on the stock pile – deals a card from stock_pile_cards to waste_cards (face-up, visually to WastePileArea), or recycles waste_cards back to stock_pile_cards if stock is empty.
 func _on_stock_pile_area_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
@@ -141,3 +163,22 @@ func _on_stock_pile_area_gui_input(event: InputEvent) -> void:
 					waste_cards.append(dealt_card)
 					waste_area_node.add_child(dealt_card)
 					dealt_card.position = Vector2.ZERO
+
+# Before we can actually move cards to the foundations, we need a function that checks if a card can be legally placed on a specific foundation pile. This function will be crucial later when we implement card dragging or clicking to move.
+#card_to_add: This will be a reference to a Card node instance that we're trying to place.
+# foundation_index: An integer (0 to 3) indicating which of the four foundation piles we're trying to place it on.
+# It should return true if the move is legal, and false otherwise.
+func can_add_to_foundation(card_to_add: Card, foundation_index: int) -> bool:
+	var area_node : Panel = foundation_areas[foundation_index]
+	if area_node.is_empty():
+		if card_to_add.rank == 1:
+			return true
+		else:
+			return false
+	else:
+		# check what rank is on top already
+		var top_card_on_foundation : Card = area_node.back()
+		if card_to_add.rank > top_card_on_foundation.rank:
+			return true
+		else:
+			return false
