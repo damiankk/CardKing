@@ -169,16 +169,54 @@ func _on_stock_pile_area_gui_input(event: InputEvent) -> void:
 # foundation_index: An integer (0 to 3) indicating which of the four foundation piles we're trying to place it on.
 # It should return true if the move is legal, and false otherwise.
 func can_add_to_foundation(card_to_add: Card, foundation_index: int) -> bool:
-	var area_node : Panel = foundation_areas[foundation_index]
-	if area_node.is_empty():
+	var foundation_area_cards : Array = foundation_piles[foundation_index]
+	if foundation_area_cards.is_empty():
 		if card_to_add.rank == 1:
 			return true
 		else:
 			return false
 	else:
 		# check what rank is on top already
-		var top_card_on_foundation : Card = area_node.back()
-		if card_to_add.rank > top_card_on_foundation.rank:
+		var top_card_on_foundation : Card = foundation_area_cards.back()
+		if card_to_add.rank == (top_card_on_foundation.rank + 1) && card_to_add.suit == top_card_on_foundation.suit:
 			return true
 		else:
 			return false
+
+#card_node: The Card instance we want to add.
+#foundation_idx: Which foundation pile (0-3) to add it to.
+func add_card_to_foundation(card_node: Card, foundation_idx: int):
+	var foundation_area : Panel = foundation_areas[foundation_idx]
+	var foundation_area_children = foundation_area.get_children()
+	
+	card_node.set_face_up(true)
+	card_node.visible = true
+	
+	for child in foundation_area_children:
+		child.visible = false
+	
+	foundation_area.add_child(card_node)
+	card_node.position = Vector2.ZERO
+	foundation_piles[foundation_idx].append(card_node)
+	
+
+
+func _on_foundation_pile_area_1_gui_input(event: InputEvent, foundation_idx: int) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
+			if not waste_cards.is_empty():
+				var top_waste_card : Card = waste_cards.back()
+				
+				if can_add_to_foundation(top_waste_card, foundation_idx):
+					waste_cards.pop_back()
+					var waste_area_node = get_parent().get_node("WastePileArea")
+					
+					if not waste_area_node:
+						print("waste_area_node not found")
+					
+					waste_area_node.remove_child(top_waste_card)
+					add_card_to_foundation(top_waste_card, foundation_idx)
+					
+					if not waste_cards.is_empty():
+						var new_top_waste_card : Card = waste_cards.back()
+						new_top_waste_card.visible = true

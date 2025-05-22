@@ -41,18 +41,21 @@ offset_right = 1132.0
 offset_bottom = 170.0
 
 [node name="FoundationPileArea2" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 912.0
 offset_top = 20.0
 offset_right = 1012.0
 offset_bottom = 170.0
 
 [node name="FoundationPileArea3" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 792.0
 offset_top = 20.0
 offset_right = 892.0
 offset_bottom = 170.0
 
 [node name="FoundationPileArea4" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 672.0
 offset_top = 20.0
 offset_right = 772.0
@@ -111,3 +114,7 @@ offset_bottom = 360.0
 script = ExtResource("1_ig7tw")
 
 [connection signal="gui_input" from="StockPileArea" to="Deck" method="_on_stock_pile_area_gui_input"]
+[connection signal="gui_input" from="FoundationPileArea1" to="Deck" method="_on_foundation_pile_area_1_gui_input" binds= [0]]
+[connection signal="gui_input" from="FoundationPileArea2" to="Deck" method="_on_foundation_pile_area_1_gui_input" binds= [1]]
+[connection signal="gui_input" from="FoundationPileArea3" to="Deck" method="_on_foundation_pile_area_1_gui_input" binds= [2]]
+[connection signal="gui_input" from="FoundationPileArea4" to="Deck" method="_on_foundation_pile_area_1_gui_input" binds= [3]]
