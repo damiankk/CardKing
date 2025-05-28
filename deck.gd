@@ -11,6 +11,11 @@ const TABLEAU_Y_OFFSET = 30
 var stock_pile_cards: Array = []
 var waste_cards: Array = []
 
+var selected_card: Card = null # Will store the Card node instance that's selected
+var source_pile_is_tableau: bool = false # Was the selected card from a Tableau pile?
+var source_pile_idx: int = -1      # Which Tableau pile index was it from (0-6)?
+# var selected_stack: Array = [] # For moving stacks later, not needed for single card yet
+
 #Initializes everything – creates the full deck, shuffles it, gets references to the pile areas, and calls deal_initial_tableau() and deal_stock().
 func _ready():
 	print("Deck node is ready. Creating and shuffling deck...")
@@ -298,20 +303,64 @@ func add_card_to_tableau(card_to_move: Card, tableau_idx: int):
 func _on_tableau_pile_area_gui_input(event: InputEvent, tableau_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
-			print("Tableau " + str(tableau_idx) + " clicked")
-			if not waste_cards.is_empty():
-				var top_waste_card : Card = waste_cards.back()
+			if selected_card == null:
+				print("Tableau " + str(tableau_idx) + " clicked")
+				if not waste_cards.is_empty():
+					var top_waste_card : Card = waste_cards.back()
+					
+					if can_add_to_tableau(top_waste_card, tableau_idx):
+						waste_cards.pop_back()
+						var waste_area_node = get_parent().get_node("WastePileArea")
+						
+						if not waste_area_node:
+							print("waste_area_node not found")
+							waste_cards.append(top_waste_card) # Put card back if critical error
+							return
+						
+						waste_area_node.remove_child(top_waste_card)
+						add_card_to_tableau(top_waste_card, tableau_idx)
+						
+						if not waste_cards.is_empty():
+							var new_top_waste_card : Card = waste_cards.back()
+							new_top_waste_card.visible = true
+						print("Moved card from Waste to Tableau ", tableau_idx)
+						return
+							
+				var clicked_tableau_pile_data : Array = tableau_piles[tableau_idx]
+				if clicked_tableau_pile_data.is_empty():
+					return
 				
-				if can_add_to_tableau(top_waste_card, tableau_idx):
-					waste_cards.pop_back()
-					var waste_area_node = get_parent().get_node("WastePileArea")
-					
-					if not waste_area_node:
-						print("waste_area_node not found")
-					
-					waste_area_node.remove_child(top_waste_card)
-					add_card_to_tableau(top_waste_card, tableau_idx)
-					
-					if not waste_cards.is_empty():
-						var new_top_waste_card : Card = waste_cards.back()
-						new_top_waste_card.visible = true
+				var top_card : Card = clicked_tableau_pile_data.back() as Card
+				if not top_card or not top_card.is_face_up:
+					print("Error: Top card was null or face down.")
+					return
+				
+				selected_card = top_card
+				source_pile_is_tableau = true
+				source_pile_idx = tableau_idx
+				selected_card.modulate = Color.LIGHT_BLUE
+			else:
+				var destination_tableau_idx = tableau_idx
+				if destination_tableau_idx == source_pile_idx:
+					deselect_selected_card()
+					return
+				
+				if can_add_to_tableau(selected_card, destination_tableau_idx):
+					tableau_piles[source_pile_idx].pop_back()
+					tableau_areas[source_pile_idx].remove_child(selected_card)
+					add_card_to_tableau(selected_card, destination_tableau_idx)
+					flip_top_tableau_card(source_pile_idx)
+					deselect_selected_card()
+					return
+				else:
+					print("Illegal move")
+					deselect_selected_card()
+					return
+			
+func deselect_selected_card():
+	if selected_card == null:
+		return
+	selected_card.modulate = Color.WHITE
+	selected_card = null
+	source_pile_is_tableau = false
+	source_pile_idx = -1
