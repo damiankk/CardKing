@@ -210,6 +210,21 @@ func add_card_to_foundation(card_node: Card, foundation_idx: int):
 func _on_foundation_area_clicked(event: InputEvent, foundation_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
+			if selected_card != null and source_pile_is_tableau:
+				if can_add_to_foundation(selected_card, foundation_idx):
+					tableau_piles[source_pile_idx].pop_back()
+					tableau_areas[source_pile_idx].remove_child(selected_card)
+
+					add_card_to_foundation(selected_card, foundation_idx)
+					
+					if not tableau_piles[source_pile_idx].is_empty():
+						flip_top_tableau_card(source_pile_idx)
+					deselect_selected_card()
+					return
+				else:
+					deselect_selected_card()
+					return
+					
 			if not waste_cards.is_empty():
 				var top_waste_card : Card = waste_cards.back()
 				
@@ -228,35 +243,6 @@ func _on_foundation_area_clicked(event: InputEvent, foundation_idx: int) -> void
 						new_top_waste_card.visible = true
 						
 					return
-			
-			for tableau_source_idx in range(7) :
-				var tableau_pile : Array = tableau_piles[tableau_source_idx]
-				if not tableau_pile.is_empty():
-					var top_tableau_card : Card = tableau_pile.back()
-					if not top_tableau_card.is_face_up:
-						continue
-					
-					if can_add_to_foundation(top_tableau_card, foundation_idx):
-						var tableau_area_node_name = "TableauPileArea" + str(tableau_source_idx + 1)
-						print("Adding card from " + tableau_area_node_name)
-						var tableau_area_node = tableau_areas[tableau_source_idx]
-						if not tableau_area_node: 
-							print("ERROR...")
-							return
-						
-						if top_tableau_card.get_parent() != tableau_area_node:
-							print("Top tableau card parent is different than tableau area node! Escaping")
-							return
-							
-						tableau_pile.pop_back()
-						tableau_area_node.remove_child(top_tableau_card)
-						
-						add_card_to_foundation(top_tableau_card, foundation_idx)
-						
-						if not tableau_pile.is_empty():
-							flip_top_tableau_card(tableau_source_idx)
-						
-						return
 
 func flip_top_tableau_card(tableau_idx: int):
 	if tableau_piles[tableau_idx].is_empty():
