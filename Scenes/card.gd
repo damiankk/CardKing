@@ -105,3 +105,18 @@ func get_card_description() -> String:
 func set_face_up(face_up: bool):
 	is_face_up = face_up
 	update_display()
+
+func set_interactive(interactive: bool):
+	if interactive:
+		self.mouse_filter = Control.MouseFilter.MOUSE_FILTER_STOP
+	else:
+		self.mouse_filter = Control.MouseFilter.MOUSE_FILTER_IGNORE
+
+signal card_clicked(card_instance)
+func _gui_input(event: InputEvent):
+	# Only process if this card is interactive (mouse_filter is STOP)
+	if get_mouse_filter() == Control.MOUSE_FILTER_STOP and is_face_up:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			# Emit a signal when this card is clicked
+			card_clicked.emit(self) 
+			get_viewport().set_input_as_handled() # Optional: Stop event from propagating further
