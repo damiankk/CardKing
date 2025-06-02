@@ -111,7 +111,7 @@ func deal_initial_tableau():
 				dealt_card.position = Vector2(0, j * TABLEAU_Y_OFFSET)
 				# Inside the 'if dealt_card:' block in deal_initial_tableau
 				if j == i: # Is this the last card for this pile?
-					print("Setting card (Pile ", i, ", Card ", j, ") FACE UP") # Debug print
+					#print("Setting card (Pile ", i, ", Card ", j, ") FACE UP") # Debug print
 					dealt_card.set_face_up(true)
 					dealt_card.set_interactive(true)
 				else: # This is a card that should be face down
@@ -468,3 +468,7 @@ func _execute_move(destination_type: String, destination_idx: int):
 	
 	deselect_selected_card()
 	
+
+func _on_texture_button_pressed() -> void:
+	print("New Game button pressed. Reloading scene...")
+	get_tree().reload_current_scene()
