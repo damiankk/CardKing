@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://t88lxmbpm4fu"]
+[gd_scene load_steps=8 format=3 uid="uid://t88lxmbpm4fu"]
 
 [ext_resource type="Script" uid="uid://ckml78qxssdbl" path="res://deck.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://bvxguqkiuttpe" path="res://Assets/new_game_optimized.png" id="2_h2yge"]
 [ext_resource type="BitMap" uid="uid://h2v46f3c6asm" path="res://Assets/new_game_bitmap.png" id="4_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://df2muvim1y4vb" path="res://Assets/new_game_hover_optimized.png" id="4_7mycd"]
 [ext_resource type="Texture2D" uid="uid://c32vncbx5md1m" path="res://Assets/new_game_pressed_optimized.png" id="4_lquwl"]
+[ext_resource type="Texture2D" uid="uid://j7am5nypv2l4" path="res://Assets/WinGameBackground.jpg" id="6_7mycd"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_272bh"]
+texture = ExtResource("6_7mycd")
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -128,6 +132,55 @@ texture_pressed = ExtResource("4_lquwl")
 texture_hover = ExtResource("4_7mycd")
 texture_click_mask = ExtResource("4_1bvp3")
 
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="WinScreen" type="Panel" parent="UILayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -363.0
+offset_top = -272.25
+offset_right = 363.0
+offset_bottom = 272.25
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_272bh")
+
+[node name="WinMessageLabel" type="Label" parent="UILayer/WinScreen"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 40.0
+offset_bottom = 63.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.917647, 0.623529, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 50
+text = "Braaawo braaawo! Win!"
+horizontal_alignment = 1
+
+[node name="WinScreenNewGameButton" type="TextureButton" parent="UILayer/WinScreen"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -140.0
+offset_right = 210.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("2_h2yge")
+texture_pressed = ExtResource("4_lquwl")
+texture_hover = ExtResource("4_7mycd")
+texture_click_mask = ExtResource("4_1bvp3")
+
 [connection signal="gui_input" from="StockPileArea" to="Deck" method="_on_stock_pile_area_gui_input"]
 [connection signal="gui_input" from="FoundationPileArea1" to="Deck" method="_on_foundation_area_clicked" binds= [0]]
 [connection signal="gui_input" from="FoundationPileArea2" to="Deck" method="_on_foundation_area_clicked" binds= [1]]
@@ -141,3 +194,4 @@ texture_click_mask = ExtResource("4_1bvp3")
 [connection signal="gui_input" from="TableauPileArea6" to="Deck" method="_on_tableau_pile_area_gui_input" binds= [5]]
 [connection signal="gui_input" from="TableauPileArea7" to="Deck" method="_on_tableau_pile_area_gui_input" binds= [6]]
 [connection signal="pressed" from="TextureButton" to="Deck" method="_on_texture_button_pressed"]
+[connection signal="pressed" from="UILayer/WinScreen/WinScreenNewGameButton" to="Deck" method="_on_texture_button_pressed"]
