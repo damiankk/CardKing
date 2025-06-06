@@ -212,6 +212,8 @@ func add_card_to_foundation(card_node: Card, foundation_idx: int):
 	card_node.position = Vector2.ZERO
 	foundation_piles[foundation_idx].append(card_node)
 	
+	_check_for_win_condition()
+	
 func _on_foundation_area_clicked(event: InputEvent, foundation_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
@@ -254,10 +256,11 @@ func flip_top_tableau_card(tableau_idx: int):
 
 func can_add_to_tableau(card_to_move: Card, tableau_idx: int) -> bool:
 	if tableau_piles[tableau_idx].is_empty():
-		if card_to_move.rank == 13:
-			return true
-		else:
-			return false # Explicitly false if not a King on empty
+		return true
+		#if card_to_move.rank == 13:
+			#return true
+		#else:
+			#return false # Explicitly false if not a King on empty
 	else:
 		var top_card : Card = tableau_piles[tableau_idx].back()
 		if card_to_move.rank + 1 == top_card.rank:
@@ -472,3 +475,16 @@ func _execute_move(destination_type: String, destination_idx: int):
 func _on_texture_button_pressed() -> void:
 	print("New Game button pressed. Reloading scene...")
 	get_tree().reload_current_scene()
+
+func _check_for_win_condition() -> void:
+	var total_cards = 0
+	for pile in foundation_piles:
+		total_cards += pile.size()
+	
+	if total_cards == 52:
+		print("Game Won!")
+		var win_screen_node = get_parent().get_node("UILayer/WinScreen")
+		if win_screen_node: # Check if the node was found and is not null
+			win_screen_node.visible = true
+		else:
+			print("ERROR: Could not find the WinScreen node! Check the path 'UILayer/WinScreen'.")
