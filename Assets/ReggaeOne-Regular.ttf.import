@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://qjflircdwwqs"
-path="res://.godot/imported/EBGaramond-VariableFont_wght.ttf-38d1dc3236a6f186d369cb87789a88f7.fontdata"
+uid="uid://cev3rst78pvnx"
+path="res://.godot/imported/ReggaeOne-Regular.ttf-9f579993642b9a698a1f010efdba4949.fontdata"
 
 [deps]
 
-source_file="res://Assets/EBGaramond-VariableFont_wght.ttf"
-dest_files=["res://.godot/imported/EBGaramond-VariableFont_wght.ttf-38d1dc3236a6f186d369cb87789a88f7.fontdata"]
+source_file="res://Assets/ReggaeOne-Regular.ttf"
+dest_files=["res://.godot/imported/ReggaeOne-Regular.ttf-9f579993642b9a698a1f010efdba4949.fontdata"]
 
 [params]
 
