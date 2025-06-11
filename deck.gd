@@ -19,8 +19,12 @@ var selected_stack: Array = []   # For now, will just hold [selected_card]
 var win_count = 0
 const SAVE_FILE_PATH = "user://save_data.cfg"
 
+var elapsed_time: float = 0.0
+var timer_running: bool = false
+
 #Initializes everything – creates the full deck, shuffles it, gets references to the pile areas, and calls deal_initial_tableau() and deal_stock().
 func _ready():
+	timer_running = true # Start the timer
 	load_win_count() # Load the win count from file at startup
 	update_win_count_label()
 	print("Deck node is ready. Creating and shuffling deck...")
@@ -487,7 +491,8 @@ func _check_for_win_condition() -> void:
 		total_cards += pile.size()
 	
 	if total_cards == 52:
-		print("Game Won!")
+		timer_running = false # Stop the timer
+		print("Game Won! Final time: ", elapsed_time)
 		win_count += 1 # 1. Increment the script's variable
 		print("New win count: ", win_count)
 		save_win_count()
@@ -535,3 +540,17 @@ func update_win_count_label():
 		label_node.text = "Total wins: " + str(win_count)
 	else:
 		print("ERROR: Could not find WinCountLabel node!")
+
+func update_time_display():
+	var time_label_node = get_parent().get_node("TimeLabel")
+	if time_label_node:
+		var total_seconds = int(elapsed_time)
+		var minutes = total_seconds / 60
+		var seconds = total_seconds % 60
+		# This formats the time to always have two digits, e.g., 01:05
+		time_label_node.text = "Time: %02d:%02d" % [minutes, seconds]
+
+func _process(delta: float):
+	if timer_running:
+		elapsed_time += delta
+		update_time_display()

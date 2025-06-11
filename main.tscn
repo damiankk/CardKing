@@ -197,6 +197,20 @@ theme_override_fonts/font = ExtResource("7_272bh")
 theme_override_font_sizes/font_size = 18
 text = "Total wins: 0"
 
+[node name="TimeLabel" type="Label" parent="."]
+offset_left = 17.0
+offset_top = 450.0
+offset_right = 152.0
+offset_bottom = 480.0
+theme_override_colors/font_color = Color(0.941176, 0.901961, 0.54902, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.0196078)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/font = ExtResource("7_272bh")
+theme_override_font_sizes/font_size = 18
+text = "Time: 00:00"
+
 [connection signal="gui_input" from="StockPileArea" to="Deck" method="_on_stock_pile_area_gui_input"]
 [connection signal="gui_input" from="FoundationPileArea1" to="Deck" method="_on_foundation_area_clicked" binds= [0]]
 [connection signal="gui_input" from="FoundationPileArea2" to="Deck" method="_on_foundation_area_clicked" binds= [1]]
