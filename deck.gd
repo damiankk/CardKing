@@ -16,8 +16,13 @@ var source_pile_type: String = "" # Will be "WASTE" or "TABLEAU"
 var source_pile_idx: int = -1    # Index if source is Tableau (0-6), or -1/other for Waste
 var selected_stack: Array = []   # For now, will just hold [selected_card]
 
+var win_count = 0
+const SAVE_FILE_PATH = "user://save_data.cfg"
+
 #Initializes everything – creates the full deck, shuffles it, gets references to the pile areas, and calls deal_initial_tableau() and deal_stock().
 func _ready():
+	load_win_count() # Load the win count from file at startup
+	update_win_count_label()
 	print("Deck node is ready. Creating and shuffling deck...")
 	create_deck()
 	shuffle_deck()
@@ -483,8 +488,50 @@ func _check_for_win_condition() -> void:
 	
 	if total_cards == 52:
 		print("Game Won!")
-		var win_screen_node = get_parent().get_node("UILayer/WinScreen")
+		win_count += 1 # 1. Increment the script's variable
+		print("New win count: ", win_count)
+		save_win_count()
+		update_win_count_label()
+		
+		var win_screen_node = get_parent().get_node("WinScreen")
 		if win_screen_node: # Check if the node was found and is not null
 			win_screen_node.visible = true
 		else:
-			print("ERROR: Could not find the WinScreen node! Check the path 'UILayer/WinScreen'.")
+			print("ERROR: Could not find the WinScreen node! Check the path 'WinScreen'.")
+
+func save_win_count():
+	var config = ConfigFile.new()
+	config.set_value("Stats", "win_count", win_count)
+	var err = config.save(SAVE_FILE_PATH)
+	if err != OK:
+		print("Error saving win count!")
+
+func load_win_count():
+	var config = ConfigFile.new()
+	# Check if the file does not exist first
+	if not FileAccess.file_exists(SAVE_FILE_PATH):
+		print("No save file found. Starting win count at 0.")
+		win_count = 0 # No file, so wins are 0
+		return # Exit the function
+
+	# If file exists, try to load it
+	var err = config.load(SAVE_FILE_PATH)
+	if err != OK:
+		print("Error loading save file. Resetting win count.")
+		win_count = 0 # File might be corrupt, start fresh
+		return
+
+	# Get the value from the file, providing a default of 0 if key is missing
+	win_count = config.get_value("Stats", "win_count", 0)
+	print("Loaded win count: ", win_count)
+	
+func update_win_count_label():
+	# Find the label node in the scene. Adjust the path if needed.
+	# If WinCountLabel is a child of UILayer, this path should work.
+	var label_node = get_parent().get_node("WinCountLabel") 
+	
+	if label_node: # Make sure the node was found
+		# Set its text, converting the win_count number to a string
+		label_node.text = "Total wins: " + str(win_count)
+	else:
+		print("ERROR: Could not find WinCountLabel node!")

@@ -9,8 +9,8 @@ var suit: int = -1 # 0=Clubs, 1=Diamonds, 2=Hearts, 3=Spades. -1 means unassigne
 var rank: int = -1 # 1=Ace, 2-10, 11=Jack, 12=Queen, 13=King. -1 means unassigned.
 
 # References to our Label nodes (gets them when the node is ready)
-#@onready var rank_label: Label = $RankLabel
-#@onready var suit_label: Label = $SuitLabel
+@onready var rank_label_node: Label = $VBoxContainer/RankLabel
+@onready var suit_label_node: Label = $VBoxContainer/SuitLabel
 
 var is_face_up: bool = false
 
@@ -18,7 +18,7 @@ var is_face_up: bool = false
 func set_card_data(new_suit: int, new_rank: int):
 	suit = new_suit
 	rank = new_rank
-	update_display() # Update the labels based on the new data
+	#update_display() # Update the labels based on the new data
 
 # Updates the visual display (labels) based on suit and rank
 func update_display():
@@ -31,7 +31,7 @@ func update_display():
 		13: rank_string = "K"
 		_: rank_string = str(rank) # Handles 2-10
 	# Use $RankLabel directly:
-	$RankLabel.text = rank_string
+	rank_label_node.text = rank_string
 
 	# 2. Determine Suit Symbol and Color
 	var suit_symbol: String
@@ -53,23 +53,23 @@ func update_display():
 			suit_symbol = "?"
 			current_color = COLOR_BLACK
 	# Use $SuitLabel directly:
-	$SuitLabel.text = suit_symbol
+	suit_label_node.text = suit_symbol
 
 	# 4. Apply Color (using code override)
 	# Use $RankLabel and $SuitLabel directly:
-	$RankLabel.add_theme_color_override("font_color", current_color)
-	$SuitLabel.add_theme_color_override("font_color", current_color)
+	rank_label_node.add_theme_color_override("font_color", current_color)
+	suit_label_node.add_theme_color_override("font_color", current_color)
 
 	# Example adjustment in update_display if Background is a Panel
 	#print("my is_face_up is " + str(is_face_up))
 	# Ensure labels are visible when face-up
-	$RankLabel.visible = is_face_up
-	$SuitLabel.visible = is_face_up
+	rank_label_node.visible = is_face_up
+	suit_label_node.visible = is_face_up
 
 	# Set z_index values dynamically
 	$Background.z_index = 0  # Background should be at the lowest level
-	$RankLabel.z_index = 1   # Rank label above the background
-	$SuitLabel.z_index = 1   # Suit label above the background
+	rank_label_node.z_index = 1   # Rank label above the background
+	suit_label_node.z_index = 1   # Suit label above the background
 	if is_face_up:
 		$Background.modulate = Color(1, 1, 1) # White background
 	else:

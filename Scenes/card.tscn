@@ -24,28 +24,6 @@ offset_bottom = 150.0
 mouse_filter = 2
 script = ExtResource("1_0qqmn")
 
-[node name="RankLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 50.0
-offset_bottom = 33.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_wf8id")
-theme_override_font_sizes/font_size = 20
-text = "A"
-
-[node name="SuitLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 35.0
-offset_right = 50.0
-offset_bottom = 58.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_wf8id")
-theme_override_font_sizes/font_size = 20
-text = "♠"
-
 [node name="Background" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -55,3 +33,27 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0qqmn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 28.0
+offset_bottom = 72.0
+alignment = 1
+
+[node name="RankLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_wf8id")
+theme_override_font_sizes/font_size = 16
+text = "A"
+horizontal_alignment = 1
+
+[node name="SuitLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_wf8id")
+theme_override_font_sizes/font_size = 16
+text = "♠"
+horizontal_alignment = 1
