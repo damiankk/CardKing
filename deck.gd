@@ -22,10 +22,12 @@ const SAVE_FILE_PATH = "user://save_data.cfg"
 var elapsed_time: float = 0.0
 var timer_running: bool = false
 
+var high_scores: Array = []
+
 #Initializes everything – creates the full deck, shuffles it, gets references to the pile areas, and calls deal_initial_tableau() and deal_stock().
 func _ready():
 	timer_running = true # Start the timer
-	load_win_count() # Load the win count from file at startup
+	load_game_data() # Load the win count from file at startup
 	update_win_count_label()
 	print("Deck node is ready. Creating and shuffling deck...")
 	create_deck()
@@ -485,50 +487,36 @@ func _on_texture_button_pressed() -> void:
 	print("New Game button pressed. Reloading scene...")
 	get_tree().reload_current_scene()
 
+# Modify your existing _check_for_win_condition function
 func _check_for_win_condition() -> void:
 	var total_cards = 0
 	for pile in foundation_piles:
 		total_cards += pile.size()
-	
-	if total_cards == 52:
-		timer_running = false # Stop the timer
+
+	# In Godot 4, you can simplify the above with:
+	# var total_cards = foundation_piles.map(func(pile): return pile.size()).reduce(func(a, b): return a + b, 0)
+
+	if total_cards == 2:
+		timer_running = false
 		print("Game Won! Final time: ", elapsed_time)
-		win_count += 1 # 1. Increment the script's variable
-		print("New win count: ", win_count)
-		save_win_count()
-		update_win_count_label()
+
+		# --- Add This New Logic ---
+		high_scores.append(elapsed_time) # 1. Add the new time
+		high_scores.sort()               # 2. Sort the list (lowest time first)
+		if high_scores.size() > 5:       # 3. Keep only the top 5
+			high_scores.resize(5)
+
+		win_count += 1
+		save_game_data()                 # 4. Save the new high scores list
 		
-		var win_screen_node = get_parent().get_node("WinScreen")
-		if win_screen_node: # Check if the node was found and is not null
+		update_high_scores_display()     # 5. Update the labels with the new list
+
+		var win_screen_node = get_parent().get_node("UILayer/WinScreen")
+		if win_screen_node:
 			win_screen_node.visible = true
 		else:
-			print("ERROR: Could not find the WinScreen node! Check the path 'WinScreen'.")
+			print("ERROR: Could not find the WinScreen node!")
 
-func save_win_count():
-	var config = ConfigFile.new()
-	config.set_value("Stats", "win_count", win_count)
-	var err = config.save(SAVE_FILE_PATH)
-	if err != OK:
-		print("Error saving win count!")
-
-func load_win_count():
-	var config = ConfigFile.new()
-	# Check if the file does not exist first
-	if not FileAccess.file_exists(SAVE_FILE_PATH):
-		print("No save file found. Starting win count at 0.")
-		win_count = 0 # No file, so wins are 0
-		return # Exit the function
-
-	# If file exists, try to load it
-	var err = config.load(SAVE_FILE_PATH)
-	if err != OK:
-		print("Error loading save file. Resetting win count.")
-		win_count = 0 # File might be corrupt, start fresh
-		return
-
-	# Get the value from the file, providing a default of 0 if key is missing
-	win_count = config.get_value("Stats", "win_count", 0)
-	print("Loaded win count: ", win_count)
 	
 func update_win_count_label():
 	# Find the label node in the scene. Adjust the path if needed.
@@ -554,3 +542,75 @@ func _process(delta: float):
 	if timer_running:
 		elapsed_time += delta
 		update_time_display()
+
+func save_game_data():
+	# Create a dictionary to hold all the data we want to save
+	var save_data = {
+		"win_count": win_count,
+		"high_scores": high_scores
+	}
+	
+	# Open the save file for writing
+	var save_file = FileAccess.open(SAVE_FILE_PATH, FileAccess.WRITE)
+	if save_file:
+		# Convert the dictionary to a JSON string
+		var json_string = JSON.stringify(save_data, "\t") # Using "\t" for nice indentation
+		# Store the string in the file
+		save_file.store_string(json_string)
+		# File closes automatically when 'save_file' goes out of scope
+		print("Game data saved successfully.")
+	else:
+		print("ERROR: Could not save game data.")
+
+func load_game_data():
+	if not FileAccess.file_exists(SAVE_FILE_PATH):
+		print("No save file found. Using default values.")
+		win_count = 0
+		high_scores = []
+		return # Exit if no file exists
+
+	# Open the save file for reading
+	var save_file = FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
+	if save_file:
+		# Read the entire file as text
+		var json_string = save_file.get_as_text()
+		# Parse the JSON string
+		var parse_result = JSON.parse_string(json_string)
+		
+		# JSON.parse_string returns a Variant. Check if parsing was successful
+		if parse_result:
+			var data = parse_result # 'data' is now our dictionary
+			# Use .get() with a default value for safety
+			win_count = int(data.get("win_count", 0))
+			high_scores = data.get("high_scores", [])
+			print("Game data loaded. Wins: ", win_count, " High Scores: ", high_scores)
+		else:
+			print("ERROR: Could not parse save file. Using default values.")
+			win_count = 0
+			high_scores = []
+	else:
+		print("ERROR: Could not open save file for reading.")
+
+# Add this new function to deck.gd
+func update_high_scores_display():
+	# Get the container that holds the score labels
+	var scores_container = get_parent().get_node("UILayer/WinScreen/ScoresContainer")
+	if not scores_container:
+		print("ERROR: ScoresContainer node not found!")
+		return
+
+	# Loop through our high scores and update the labels
+	for i in range(5):
+		var label_node = scores_container.get_node_or_null("ScoreLabel" + str(i + 1))
+		if not label_node:
+			continue # Skip if a label is missing for some reason
+
+		if i < high_scores.size():
+			# If a score exists for this rank, format and display it
+			var score_time = high_scores[i]
+			var minutes = int(score_time) / 60
+			var seconds = int(score_time) % 60
+			label_node.text = "%d. %02d:%02d" % [i + 1, minutes, seconds]
+		else:
+			# If there's no score for this rank yet, display placeholders
+			label_node.text = "%d. --:--" % [i + 1]
