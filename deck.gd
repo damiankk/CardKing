@@ -496,7 +496,7 @@ func _check_for_win_condition() -> void:
 	# In Godot 4, you can simplify the above with:
 	# var total_cards = foundation_piles.map(func(pile): return pile.size()).reduce(func(a, b): return a + b, 0)
 
-	if total_cards == 2:
+	if total_cards == 52:
 		timer_running = false
 		print("Game Won! Final time: ", elapsed_time)
 
